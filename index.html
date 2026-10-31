@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus Group Finder - PBL Collaboration Hub</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="logo-icon">🎓</div>
+        <div>
+          <h1 class="brand-title">Campus Group Finder</h1>
+          <p class="brand-subtitle">Project-Based Learning (PBL) &bull; Data Structures & Algorithms</p>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <div class="badge dsa-badge">Linked List &bull; Queue &bull; Matching</div>
+        <button class="btn btn-outline" id="reset-data-btn" title="Reset to initial C++ defaults">
+          🔄 Reset Data
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- KPI Summary Row -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon blue">👨‍🎓</div>
+        <div class="metric-content">
+          <span class="metric-label">Registered Students</span>
+          <span class="metric-value" id="stat-students-count">3</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon purple">👥</div>
+        <div class="metric-content">
+          <span class="metric-label">Active Groups</span>
+          <span class="metric-value" id="stat-groups-count">3</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon orange">📬</div>
+        <div class="metric-content">
+          <span class="metric-label">Pending In Queue</span>
+          <span class="metric-value" id="stat-queue-count">0</span>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-icon green">✅</div>
+        <div class="metric-content">
+          <span class="metric-label">Total Group Members</span>
+          <span class="metric-value" id="stat-members-count">0</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="tab-overview">📊 Overview & Groups</button>
+      <button class="tab-btn" data-tab="tab-matchmaker">🎯 Find Best Group</button>
+      <button class="tab-btn" data-tab="tab-queue">
+        📬 Queue & Requests 
+        <span class="tab-badge" id="queue-badge">0</span>
+      </button>
+      <button class="tab-btn" data-tab="tab-students">👨‍🎓 Students Directory</button>
+      <button class="tab-btn" data-tab="tab-terminal">💻 Terminal Simulation</button>
+    </nav>
+
+    <!-- TAB 1: OVERVIEW & GROUPS -->
+    <div class="tab-pane active" id="tab-overview">
+      <div class="section-header">
+        <div>
+          <h2>Campus Collaboration Groups</h2>
+          <p class="section-desc">Each group manages members as a <strong>Singly Linked List</strong> (<span class="mono">head -> next -> NULL</span>).</p>
+        </div>
+        <div class="section-actions">
+          <button class="btn btn-primary" id="open-add-group-modal">+ Create Group</button>
+        </div>
+      </div>
+
+      <div class="groups-grid" id="groups-container">
+        <!-- Group cards injected dynamically -->
+      </div>
+    </div>
+
+    <!-- TAB 2: FIND BEST GROUP (MATCHMAKER) -->
+    <div class="tab-pane" id="tab-matchmaker">
+      <div class="section-header">
+        <div>
+          <h2>Group Compatibility Matchmaker</h2>
+          <p class="section-desc">Matches a student against group skill requirements (50% match per matching skill, max 100%).</p>
+        </div>
+      </div>
+
+      <div class="card matchmaker-card">
+        <div class="matchmaker-controls">
+          <label for="match-student-select" class="form-label">Select Student to Match:</label>
+          <div class="input-action-row">
+            <select id="match-student-select" class="form-select">
+              <!-- Injected dynamically -->
+            </select>
+            <button class="btn btn-primary" id="calculate-match-btn">⚡ Calculate Compatibility</button>
+          </div>
+        </div>
+
+        <div id="match-results-wrapper" class="match-results-wrapper hidden">
+          <div class="best-match-banner" id="best-match-banner">
+            <!-- Best match banner injected dynamically -->
+          </div>
+
+          <h3 class="subsection-title">All Compatibility Scores:</h3>
+          <div class="compatibility-list" id="compatibility-list">
+            <!-- Compatibility scores injected dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: QUEUE & REQUESTS -->
+    <div class="tab-pane" id="tab-queue">
+      <div class="section-header">
+        <div>
+          <h2>Join Requests Queue (FIFO)</h2>
+          <p class="section-desc">Join requests are enqueued (<span class="mono">enqueue()</span>) and processed in First-In-First-Out order (<span class="mono">dequeue()</span>).</p>
+        </div>
+        <div class="section-actions">
+          <button class="btn btn-primary" id="open-join-modal">+ Send Join Request</button>
+        </div>
+      </div>
+
+      <div class="queue-layout">
+        <!-- Left: Queue Visualization -->
+        <div class="card queue-visual-card">
+          <div class="card-header-flex">
+            <h3>Request Queue Pipeline</h3>
+            <span class="mono-badge" id="queue-status-text">Status: Empty (0 / 50)</span>
+          </div>
+          <p class="hint-text">Visual representation of requests waiting in the linear array queue (<span class="mono">arr[50]</span>).</p>
+          
+          <div class="queue-track" id="queue-visual-track">
+            <div class="queue-empty-state">No requests currently in queue.</div>
+          </div>
+        </div>
+
+        <!-- Right: Process Next Request Card -->
+        <div class="card process-request-card">
+          <div class="card-header-flex">
+            <h3>Process Next Request</h3>
+            <span class="badge blue">Choice 5 in C++</span>
+          </div>
+
+          <div id="pending-request-box">
+            <div class="pending-empty-state">
+              <div class="empty-icon">📭</div>
+              <p>No pending join requests to process.</p>
+              <button class="btn btn-sm btn-outline" id="quick-send-sample-req">Send a Test Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: STUDENTS DIRECTORY -->
+    <div class="tab-pane" id="tab-students">
+      <div class="section-header">
+        <div>
+          <h2>Registered Students</h2>
+          <p class="section-desc">View student profiles and their registered skill proficiencies.</p>
+        </div>
+        <div class="section-actions">
+          <button class="btn btn-primary" id="open-add-student-modal">+ Register New Student</button>
+        </div>
+      </div>
+
+      <div class="students-grid" id="students-container">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- TAB 5: TERMINAL SIMULATION -->
+    <div class="tab-pane" id="tab-terminal">
+      <div class="section-header">
+        <div>
+          <h2>C++ Console Simulation</h2>
+          <p class="section-desc">Live stream of menu commands matching the exact <span class="mono">cout</span> outputs from <span class="mono">main.cpp</span>.</p>
+        </div>
+        <div class="section-actions">
+          <button class="btn btn-sm btn-outline" id="clear-terminal-btn">Clear Log</button>
+        </div>
+      </div>
+
+      <div class="terminal-window">
+        <div class="terminal-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="terminal-title">CampusApp::PBL - C++ Terminal (Menu Driven)</span>
+        </div>
+        <pre class="terminal-body" id="terminal-output"></pre>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL: ADD STUDENT -->
+  <div class="modal-overlay hidden" id="modal-add-student">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Register New Student</h3>
+        <button class="modal-close" id="close-student-modal">&times;</button>
+      </div>
+      <form id="form-add-student">
+        <div class="form-group">
+          <label for="student-id" class="form-label">Student ID</label>
+          <input type="number" id="student-id" class="form-input" required placeholder="e.g. 104">
+        </div>
+        <div class="form-group">
+          <label for="student-name" class="form-label">Full Name</label>
+          <input type="text" id="student-name" class="form-input" required placeholder="e.g. Rahul Sharma">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-skill1" class="form-label">Primary Skill</label>
+            <input type="text" id="student-skill1" class="form-input" required placeholder="e.g. C++">
+          </div>
+          <div class="form-group">
+            <label for="student-skill2" class="form-label">Secondary Skill</label>
+            <input type="text" id="student-skill2" class="form-input" required placeholder="e.g. DSA">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancel-student-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Student</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE GROUP -->
+  <div class="modal-overlay hidden" id="modal-add-group">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create New Group</h3>
+        <button class="modal-close" id="close-group-modal">&times;</button>
+      </div>
+      <form id="form-add-group">
+        <div class="form-group">
+          <label for="group-id" class="form-label">Group ID</label>
+          <input type="number" id="group-id" class="form-input" required placeholder="e.g. 4">
+        </div>
+        <div class="form-group">
+          <label for="group-name" class="form-label">Group Name</label>
+          <input type="text" id="group-name" class="form-input" required placeholder="e.g. Cloud Explorers">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="group-skill1" class="form-label">Required Skill 1</label>
+            <input type="text" id="group-skill1" class="form-input" required placeholder="e.g. Python">
+          </div>
+          <div class="form-group">
+            <label for="group-skill2" class="form-label">Required Skill 2</label>
+            <input type="text" id="group-skill2" class="form-input" required placeholder="e.g. Cloud">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancel-group-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Group</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SEND JOIN REQUEST -->
+  <div class="modal-overlay hidden" id="modal-send-request">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Send Join Request (Enqueue)</h3>
+        <button class="modal-close" id="close-request-modal">&times;</button>
+      </div>
+      <form id="form-send-request">
+        <div class="form-group">
+          <label for="req-student-select" class="form-label">Select Student</label>
+          <select id="req-student-select" class="form-select" required></select>
+        </div>
+        <div class="form-group">
+          <label for="req-group-select" class="form-label">Select Target Group</label>
+          <select id="req-group-select" class="form-select" required></select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" id="cancel-request-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Enqueue Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
