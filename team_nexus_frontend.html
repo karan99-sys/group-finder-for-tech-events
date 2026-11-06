@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Nexus | Group Finder</title>
+
+    <link rel="stylesheet" href="team_nexus_style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">TN</span><span>Team<span class="brand-accent">Nexus</span></span></a>
+    <nav>
+      <a class="active" href="#dashboard">Dashboard</a>
+      <a href="#students">Students</a>
+      <a href="#groups">Groups</a>
+      <a href="#requests">Requests</a>
+    </nav>
+    <div class="profile"><span class="avatar">AK</span><span class="profile-name">Aaditya</span></div>
+  </header>
+
+  <main class="container" id="dashboard">
+    <section class="welcome">
+      <div>
+        <p class="eyebrow">STUDENT COLLABORATION PLATFORM</p>
+        <h1>Find your people.<br><span>Build something great.</span></h1>
+        <p class="welcome-copy">Discover teams, connect with students, and find the right people for your next tech event.</p>
+        <a class="primary-btn" href="#groups">Explore groups <span>→</span></a>
+      </div>
+      <div class="welcome-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="art-card card-top"><span class="art-icon">✦</span><span>Ideas become projects</span></div>
+        <div class="art-center"><span>TN</span></div>
+        <div class="art-card card-bottom"><span class="mini-avatars"><i>A</i><i>R</i><i>S</i></span><span>Better together</span></div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <article class="stat-card"><div class="stat-icon purple">♙</div><div><p>Total students</p><strong id="studentCount">36</strong></div></article>
+      <article class="stat-card"><div class="stat-icon blue">▦</div><div><p>Active groups</p><strong id="groupCount">15</strong></div></article>
+      <article class="stat-card"><div class="stat-icon orange">↗</div><div><p>Open spots</p><strong>24</strong></div></article>
+      <article class="stat-card"><div class="stat-icon green">✓</div><div><p>My requests</p><strong id="requestCount">0</strong></div></article>
+    </section>
+
+    <section class="section" id="groups">
+      <div class="section-heading">
+        <div><p class="eyebrow">GET STARTED</p><h2>Find your team</h2><p class="muted">Browse groups looking for new teammates.</p></div>
+        <div class="search-wrap"><span>⌕</span><input id="searchInput" type="search" placeholder="Search by group, skill or event..." aria-label="Search groups"></div>
+      </div>
+      <div class="filter-row">
+        <button class="filter active" data-filter="All">All groups</button>
+        <button class="filter" data-filter="AI/ML">AI / ML</button>
+        <button class="filter" data-filter="Web Development">Web development</button>
+        <button class="filter" data-filter="App Development">App development</button>
+        <button class="filter" data-filter="Design">Design</button>
+      </div>
+      <div class="group-grid" id="groupGrid"></div>
+    </section>
+
+    <section class="section lower-grid" id="students">
+      <div class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">COMMUNITY</p><h2>Students</h2></div><span class="small-tag">Sample directory</span></div>
+        <div class="student-list" id="studentList"></div>
+      </div>
+      <div class="panel" id="requests">
+        <div class="panel-heading"><div><p class="eyebrow">YOUR ACTIVITY</p><h2>Join requests</h2></div><span class="request-badge" id="requestBadge">0 pending</span></div>
+        <div id="requestList" class="request-list"><div class="empty-state"><span>✉</span><p>No requests yet</p><small>Send a request to a group to see it here.</small></div></div>
+      </div>
+    </section>
+    <footer>© 2026 Team Nexus <span>Find teammates. Share skills. Build together.</span></footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Frontend demonstration data. Replace this with API/backend data when the C++ app is connected.
+    const groups = [
+      {id:1,name:"Code Masters",category:"DSA & Competitive Coding",type:"Web Development",description:"A team focused on problem-solving, coding contests and building useful tools.",skills:["C++","DSA","Git"],members:3,capacity:5,lead:"Aarav Sharma",initials:"AS",color:"violet"},
+      {id:2,name:"AI Warriors",category:"Artificial Intelligence",type:"AI/ML",description:"Exploring machine learning ideas and creating practical AI-powered projects.",skills:["Python","ML","Data"],members:3,capacity:5,lead:"Riya Verma",initials:"RV",color:"blue"},
+      {id:3,name:"Web Wizards",category:"Web Development",type:"Web Development",description:"Designing clean, responsive websites and full-stack student products.",skills:["HTML","CSS","JavaScript"],members:4,capacity:6,lead:"Kabir Singh",initials:"KS",color:"orange"},
+      {id:4,name:"Pixel Pioneers",category:"UI / UX Design",type:"Design",description:"Turning early ideas into intuitive interfaces and polished prototypes.",skills:["Figma","UI/UX","CSS"],members:2,capacity:4,lead:"Meera Joshi",initials:"MJ",color:"pink"},
+      {id:5,name:"App Alchemists",category:"Mobile Applications",type:"App Development",description:"Building simple, helpful mobile experiences for everyday problems.",skills:["Java","Android","Firebase"],members:3,capacity:5,lead:"Dev Patel",initials:"DP",color:"green"},
+      {id:6,name:"ML Mavericks",category:"Machine Learning",type:"AI/ML",description:"Learning by experimenting with datasets, models and ML applications.",skills:["Python","Pandas","Scikit-learn"],members:2,capacity:5,lead:"Ananya Das",initials:"AD",color:"blue"}
+    ];
+    const students = [
+      {name:"Aaditya Kandari",id:"TN101",skills:"C++, DSA, HTML",initials:"AK"},
+      {name:"Riya Verma",id:"TN102",skills:"Python, Machine Learning",initials:"RV"},
+      {name:"Kabir Singh",id:"TN103",skills:"HTML, CSS, JavaScript",initials:"KS"},
+      {name:"Meera Joshi",id:"TN104",skills:"Figma, UI/UX Design",initials:"MJ"},
+      {name:"Dev Patel",id:"TN105",skills:"Java, Android",initials:"DP"}
+    ];
+    const requests = [];
+    let activeFilter = "All";
+    const groupGrid = document.getElementById("groupGrid");
+
+    function renderGroups() {
+      const query = document.getElementById("searchInput").value.toLowerCase().trim();
+      const filtered = groups.filter(g => {
+        const matchesFilter = activeFilter === "All" || g.type === activeFilter;
+        const haystack = [g.name,g.category,g.description,g.lead,...g.skills].join(" ").toLowerCase();
+        return matchesFilter && haystack.includes(query);
+      });
+      groupGrid.innerHTML = filtered.length ? filtered.map(g => `
+        <article class="group-card">
+          <div class="group-card-top"><div class="group-logo ${g.color}">${g.name.split(" ").map(w=>w[0]).slice(0,2).join("")}</div><span class="open-label">● Looking for members</span></div>
+          <p class="group-category">${g.category}</p><h3>${g.name}</h3><p class="group-description">${g.description}</p>
+          <div class="skill-list">${g.skills.map(s=>`<span>${s}</span>`).join("")}</div>
+          <div class="group-meta"><span>♙ ${g.members}/${g.capacity} members</span><span>Lead: ${g.lead}</span></div>
+          <button class="request-btn" onclick="sendRequest(${g.id})">Request to join <span>→</span></button>
+        </article>`).join("") : `<div class="no-results">No groups match your search. Try another keyword.</div>`;
+    }
+    function renderStudents() {
+      document.getElementById("studentList").innerHTML = students.map(s=>`
+        <div class="student-row"><span class="avatar student-avatar">${s.initials}</span><div class="student-info"><strong>${s.name}</strong><small>${s.id} · ${s.skills}</small></div><span class="online-dot"></span></div>`).join("");
+      document.getElementById("studentCount").textContent = 36;
+      document.getElementById("groupCount").textContent = 15;
+    }
+    function sendRequest(id) {
+      const group = groups.find(g=>g.id===id);
+      if (requests.some(r=>r.id===id)) { showToast("You have already requested to join this group."); return; }
+      requests.push({id,name:group.name,lead:group.lead});
+      renderRequests();
+      showToast("Join request sent to " + group.name + "!");
+    }
+    function renderRequests() {
+      document.getElementById("requestCount").textContent = requests.length;
+      document.getElementById("requestBadge").textContent = requests.length + " pending";
+      document.getElementById("requestList").innerHTML = requests.length ? requests.map(r=>`
+        <div class="request-row"><span class="request-icon">↗</span><div><strong>${r.name}</strong><small>Request sent to ${r.lead}</small></div><span class="pending">Pending</span></div>`).join("") : `<div class="empty-state"><span>✉</span><p>No requests yet</p><small>Send a request to a group to see it here.</small></div>`;
+    }
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(()=>toast.classList.remove("show"),2600);
+    }
+    document.getElementById("searchInput").addEventListener("input",renderGroups);
+    document.querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{
+      document.querySelector(".filter.active").classList.remove("active");
+      btn.classList.add("active");
+      activeFilter = btn.dataset.filter;
+      renderGroups();
+    }));
+    renderGroups(); renderStudents(); renderRequests();
+  </script>
+</body>
+</html>
