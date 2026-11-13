@@ -1,0 +1,36 @@
+101|Aaditya|C++|DSA
+102|Karan|Python|AI
+103|Amit|HTML|CSS
+104|Riya|C++|Problem Solving
+105|Arjun|Python|Machine Learning
+106|Meera|HTML|JavaScript
+107|Kabir|Java|Android
+108|Ananya|UI/UX|Figma
+109|Dev|C++|STL
+110|Ishita|Python|Data Science
+111|Rahul|CSS|JavaScript
+112|Simran|Cloud|Linux
+113|Vivaan|DSA|C++
+114|Priya|AI|Python
+115|Neha|Figma|UI/UX
+116|Aditya S|Java|Kotlin
+117|Manav|Networking|Linux
+118|Sana|HTML|CSS
+119|Yash|C++|Git
+120|Tanya|Python|SQL
+121|Rohan|Cybersecurity|Networking
+122|Aarav|React|JavaScript
+123|Diya|Machine Learning|Python
+124|Krish|C++|DSA
+125|Nisha|Graphic Design|Figma
+126|Om|Cloud|AWS
+127|Ayesha|Java|DSA
+128|Harsh|SQL|Data Science
+129|Pooja|HTML|React
+130|Sahil|Cybersecurity|Linux
+131|Madhav|C++|Problem Solving
+132|Ira|Python|AI
+133|Rudra|JavaScript|CSS
+134|Kavya|UI/UX|HTML
+135|Parth|AWS|Docker
+136|Ansh|C++|Python
