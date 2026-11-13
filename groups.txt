@@ -1,0 +1,16 @@
+1|Code Masters|C++|DSA
+2|AI Warriors|Python|AI
+3|Web Wizards|HTML|CSS
+4|Pixel Pioneers|UI/UX|Figma
+5|Cloud Crew|Cloud|Linux
+6|App Alchemists|Java|Android
+7|Data Detectives|SQL|Data Science
+8|Cyber Sentinels|Cybersecurity|Networking
+9|Frontend Forge|React|JavaScript
+10|ML Mavericks|Machine Learning|Python
+11|Problem Solvers|C++|Problem Solving
+12|DevOps Orbit|AWS|Docker
+13|Creative Canvas|Graphic Design|Figma
+14|Mobile Innovators|Java|Kotlin
+15|Open Source Squad|Git|C++
+222|5|5|3
