@@ -83,7 +83,7 @@ int Group::compatibility(const Student& student) const {
 }
 
 void Group::addMember(const Student& student) {
-    // Avoid adding the same student to this group more than once.
+    
     MemberNode* current = head;
     while (current != nullptr) {
         if (current->student.getID() == student.getID()) return;
@@ -121,4 +121,4 @@ void Group::displayGroup() const {
     std::cout << '\n';
 }
 
-} // namespace CampusApp
+} 
