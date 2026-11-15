@@ -26,7 +26,7 @@ bool loadStudents(const std::string& fileName, std::vector<Student>& students) {
         try {
             students.emplace_back(std::stoi(id), name, skill1, skill2);
         } catch (...) {
-          
+            
         }
     }
     return true;
@@ -135,4 +135,4 @@ bool saveMemberships(const std::string& fileName, const std::vector<Group>& grou
     return true;
 }
 
-} // namespace CampusApp
+} 
