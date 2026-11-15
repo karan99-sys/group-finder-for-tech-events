@@ -1,92 +1,136 @@
-// All text-file handling is kept in this ONE implementation file.
-// Function declarations are placed in DSA.h to avoid creating another header.
 #include "DSA.h"
+
 #include <fstream>
 #include <sstream>
-#include <string>
+#include <unordered_map>
 
 namespace CampusApp {
 
-bool loadStudents(const std::string& filename, Student students[],
-                  int& count, int capacity) {
-    std::ifstream file(filename.c_str());
-    if (!file) return false;
+bool loadStudents(const std::string& fileName, std::vector<Student>& students) {
+    std::ifstream input(fileName);
+    if (!input) return false;
 
-    count = 0;
+    students.clear();
     std::string line;
-    while (std::getline(file, line)) {
+
+    while (std::getline(input, line)) {
         if (line.empty()) continue;
-        if (count >= capacity) break;
 
         std::stringstream row(line);
-        std::string idText, name, skill1, skill2;
-        if (!std::getline(row, idText, '|') ||
-            !std::getline(row, name, '|') ||
-            !std::getline(row, skill1, '|') ||
-            !std::getline(row, skill2)) continue;
+        std::string id, name, skill1, skill2;
+        if (!std::getline(row, id, '|') || !std::getline(row, name, '|') ||
+            !std::getline(row, skill1, '|') || !std::getline(row, skill2)) {
+            continue;
+        }
 
         try {
-            int id = std::stoi(idText);
-            if (id <= 0) continue;
-            students[count] = Student(id, name, skill1, skill2);
-            ++count;
+            students.emplace_back(std::stoi(id), name, skill1, skill2);
         } catch (...) {
-            // Skip malformed lines rather than stopping the complete load.
+          
         }
     }
     return true;
 }
 
-bool loadGroups(const std::string& filename, Group groups[],
-                int& count, int capacity) {
-    std::ifstream file(filename.c_str());
-    if (!file) return false;
+bool loadGroups(const std::string& fileName, std::vector<Group>& groups) {
+    std::ifstream input(fileName);
+    if (!input) return false;
 
-    count = 0;
+    groups.clear();
     std::string line;
-    while (std::getline(file, line)) {
+
+    while (std::getline(input, line)) {
         if (line.empty()) continue;
-        if (count >= capacity) break;
 
         std::stringstream row(line);
-        std::string idText, name, skill1, skill2;
-        if (!std::getline(row, idText, '|') ||
-            !std::getline(row, name, '|') ||
-            !std::getline(row, skill1, '|') ||
-            !std::getline(row, skill2)) continue;
+        std::string id, name, skill1, skill2;
+        if (!std::getline(row, id, '|') || !std::getline(row, name, '|') ||
+            !std::getline(row, skill1, '|') || !std::getline(row, skill2)) {
+            continue;
+        }
 
         try {
-            int id = std::stoi(idText);
-            if (id <= 0) continue;
-            groups[count] = Group(id, name, skill1, skill2);
-            ++count;
+            groups.emplace_back(std::stoi(id), name, skill1, skill2, 5);
         } catch (...) {
-            // Skip malformed lines.
+            
         }
     }
     return true;
 }
 
-bool saveStudents(const std::string& filename, const Student students[], int count) {
-    std::ofstream file(filename.c_str());
-    if (!file) return false;
-    for (int i = 0; i < count; ++i) {
-        file << students[i].getID() << '|'
-             << students[i].getName() << '|'
-             << students[i].getSkill1() << '|'
-             << students[i].getSkill2() << '\n';
+bool loadMemberships(const std::string& fileName,
+                     const std::vector<Student>& students,
+                     std::vector<Group>& groups) {
+    std::ifstream input(fileName);
+    if (!input) return true; 
+
+    std::unordered_map<int, const Student*> studentByID;
+    for (const Student& student : students) {
+        studentByID[student.getID()] = &student;
+    }
+
+    std::string line;
+    while (std::getline(input, line)) {
+        if (line.empty()) continue;
+
+        std::stringstream row(line);
+        std::string groupText, studentText;
+        if (!std::getline(row, groupText, '|') || !std::getline(row, studentText)) continue;
+
+        try {
+            int groupID = std::stoi(groupText);
+            int studentID = std::stoi(studentText);
+            auto studentIt = studentByID.find(studentID);
+            if (studentIt == studentByID.end()) continue;
+
+            for (Group& group : groups) {
+                if (group.getID() == groupID) {
+                    
+                    if (findStudentGroup(groups, studentID) == -1) {
+                        group.addMember(*studentIt->second);
+                    }
+                    break;
+                }
+            }
+        } catch (...) {
+            
+        }
     }
     return true;
 }
 
-bool saveGroups(const std::string& filename, const Group groups[], int count) {
-    std::ofstream file(filename.c_str());
-    if (!file) return false;
-    for (int i = 0; i < count; ++i) {
-        file << groups[i].getID() << '|'
-             << groups[i].getName() << '|'
-             << groups[i].getRequiredSkill1() << '|'
-             << groups[i].getRequiredSkill2() << '\n';
+bool saveStudents(const std::string& fileName, const std::vector<Student>& students) {
+    std::ofstream output(fileName);
+    if (!output) return false;
+
+    for (const Student& student : students) {
+        output << student.getID() << '|'
+               << student.getName() << '|'
+               << student.getSkill1() << '|'
+               << student.getSkill2() << '\n';
+    }
+    return true;
+}
+
+bool saveGroups(const std::string& fileName, const std::vector<Group>& groups) {
+    std::ofstream output(fileName);
+    if (!output) return false;
+
+    for (const Group& group : groups) {
+        output << group.getID() << '|'
+               << group.getName() << '|'
+               << group.getRequiredSkill1() << '|'
+               << group.getRequiredSkill2() << '\n';
+    }
+    return true;
+}
+
+bool saveMemberships(const std::string& fileName, const std::vector<Group>& groups) {
+    std::ofstream output(fileName);
+    if (!output) return false;
+
+    for (const Group& group : groups) {
+        group.writeMemberIDs(output);
     }
     return true;
 }
