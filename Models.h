@@ -19,11 +19,14 @@ public:
             const std::string& skill1, const std::string& skill2);
 
     int getID() const;
-    std::string getName() const;
-    std::string getSkill1() const;
-    std::string getSkill2() const;
+    const std::string& getName() const;
+    const std::string& getSkill1() const;
+    const std::string& getSkill2() const;
+
+    bool hasSkill(const std::string& skill) const;
     void display() const;
 };
+
 
 struct MemberNode {
     Student student;
@@ -34,10 +37,11 @@ struct MemberNode {
 
 class Group {
 private:
-    int groupID;
-    std::string groupName;
+    int id;
+    std::string name;
     std::string requiredSkill1;
     std::string requiredSkill2;
+    int capacity;
     MemberNode* head;
 
     void clearMembers();
@@ -46,18 +50,28 @@ private:
 public:
     Group();
     Group(int id, const std::string& name,
-          const std::string& skill1, const std::string& skill2);
+          const std::string& skill1, const std::string& skill2,
+          int capacity = 5);
+
+    
     Group(const Group& other);
     Group& operator=(const Group& other);
     ~Group();
 
     int getID() const;
-    std::string getName() const;
-    std::string getRequiredSkill1() const;
-    std::string getRequiredSkill2() const;
+    const std::string& getName() const;
+    const std::string& getRequiredSkill1() const;
+    const std::string& getRequiredSkill2() const;
+    int getCapacity() const;
 
+    int memberCount() const;
+    int vacancies() const;
     int compatibility(const Student& student) const;
-    void addMember(const Student& student);
+
+    bool hasMember(int studentID) const;
+    void writeMemberIDs(std::ostream& output) const;
+    bool addMember(const Student& student);
+    bool removeMember(int studentID);
     void displayGroup() const;
 };
 
