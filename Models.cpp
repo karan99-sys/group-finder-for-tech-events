@@ -2,123 +2,168 @@
 
 namespace CampusApp {
 
-Student::Student() : id(0), name(""), skill1(""), skill2("") {}
+Student::Student() : id(0) {}
 
-Student::Student(int id, const std::string& name,
-                 const std::string& skill1, const std::string& skill2)
-    : id(id), name(name), skill1(skill1), skill2(skill2) {}
+Student::Student(int studentID, const std::string& studentName,
+                 const std::string& firstSkill, const std::string& secondSkill)
+    : id(studentID), name(studentName),
+      skill1(firstSkill), skill2(secondSkill) {}
 
 int Student::getID() const { return id; }
-std::string Student::getName() const { return name; }
-std::string Student::getSkill1() const { return skill1; }
-std::string Student::getSkill2() const { return skill2; }
+const std::string& Student::getName() const { return name; }
+const std::string& Student::getSkill1() const { return skill1; }
+const std::string& Student::getSkill2() const { return skill2; }
+
+bool Student::hasSkill(const std::string& skill) const {
+    return skill == skill1 || skill == skill2;
+}
 
 void Student::display() const {
-    std::cout << "ID: " << id << " | Name: " << name
+    std::cout << "ID: " << id
+              << " | Name: " << name
               << " | Skills: " << skill1 << ", " << skill2 << '\n';
 }
 
-MemberNode::MemberNode(const Student& student)
-    : student(student), next(nullptr) {}
+MemberNode::MemberNode(const Student& value)
+    : student(value), next(nullptr) {}
 
 Group::Group()
-    : groupID(0), groupName(""), requiredSkill1(""),
-      requiredSkill2(""), head(nullptr) {}
+    : id(0), capacity(5), head(nullptr) {}
 
-Group::Group(int id, const std::string& name,
-             const std::string& skill1, const std::string& skill2)
-    : groupID(id), groupName(name), requiredSkill1(skill1),
-      requiredSkill2(skill2), head(nullptr) {}
+Group::Group(int groupID, const std::string& groupName,
+             const std::string& skill1, const std::string& skill2,
+             int maxCapacity)
+    : id(groupID), name(groupName), requiredSkill1(skill1),
+      requiredSkill2(skill2), capacity(maxCapacity), head(nullptr) {}
 
 void Group::clearMembers() {
-    MemberNode* current = head;
-    while (current != nullptr) {
-        MemberNode* nextNode = current->next;
-        delete current;
-        current = nextNode;
+    while (head != nullptr) {
+        MemberNode* nodeToDelete = head;
+        head = head->next;
+        delete nodeToDelete;
     }
-    head = nullptr;
 }
 
 void Group::copyMembers(const MemberNode* source) {
-    while (source != nullptr) {
-        addMember(source->student);
-        source = source->next;
+    for (const MemberNode* current = source;
+         current != nullptr; current = current->next) {
+        addMember(current->student);
     }
 }
 
 Group::Group(const Group& other)
-    : groupID(other.groupID), groupName(other.groupName),
+    : id(other.id), name(other.name),
       requiredSkill1(other.requiredSkill1),
-      requiredSkill2(other.requiredSkill2), head(nullptr) {
+      requiredSkill2(other.requiredSkill2),
+      capacity(other.capacity), head(nullptr) {
     copyMembers(other.head);
 }
 
 Group& Group::operator=(const Group& other) {
     if (this != &other) {
         clearMembers();
-        groupID = other.groupID;
-        groupName = other.groupName;
+        id = other.id;
+        name = other.name;
         requiredSkill1 = other.requiredSkill1;
         requiredSkill2 = other.requiredSkill2;
+        capacity = other.capacity;
         copyMembers(other.head);
     }
     return *this;
 }
 
-Group::~Group() { clearMembers(); }
+Group::~Group() {
+    clearMembers();
+}
 
-int Group::getID() const { return groupID; }
-std::string Group::getName() const { return groupName; }
-std::string Group::getRequiredSkill1() const { return requiredSkill1; }
-std::string Group::getRequiredSkill2() const { return requiredSkill2; }
+int Group::getID() const { return id; }
+const std::string& Group::getName() const { return name; }
+const std::string& Group::getRequiredSkill1() const { return requiredSkill1; }
+const std::string& Group::getRequiredSkill2() const { return requiredSkill2; }
+int Group::getCapacity() const { return capacity; }
+
+int Group::memberCount() const {
+    int count = 0;
+    for (const MemberNode* current = head;
+         current != nullptr; current = current->next) {
+        ++count;
+    }
+    return count;
+}
+
+int Group::vacancies() const {
+    return capacity - memberCount();
+}
 
 int Group::compatibility(const Student& student) const {
     int score = 0;
-    if (student.getSkill1() == requiredSkill1 ||
-        student.getSkill2() == requiredSkill1) score += 50;
-    if (student.getSkill1() == requiredSkill2 ||
-        student.getSkill2() == requiredSkill2) score += 50;
+    if (student.hasSkill(requiredSkill1)) score += 50;
+    if (student.hasSkill(requiredSkill2)) score += 50;
     return score;
 }
 
-void Group::addMember(const Student& student) {
-    
-    MemberNode* current = head;
-    while (current != nullptr) {
-        if (current->student.getID() == student.getID()) return;
-        current = current->next;
+bool Group::hasMember(int studentID) const {
+    for (const MemberNode* current = head;
+         current != nullptr; current = current->next) {
+        if (current->student.getID() == studentID) return true;
     }
+    return false;
+}
+
+void Group::writeMemberIDs(std::ostream& output) const {
+    for (const MemberNode* current = head;
+         current != nullptr; current = current->next) {
+        output << id << '|' << current->student.getID() << '\n';
+    }
+}
+
+bool Group::addMember(const Student& student) {
+    if (vacancies() <= 0 || hasMember(student.getID())) return false;
 
     MemberNode* newNode = new MemberNode(student);
     if (head == nullptr) {
         head = newNode;
-        return;
+        return true;
     }
 
-    current = head;
+    MemberNode* current = head;
     while (current->next != nullptr) current = current->next;
     current->next = newNode;
+    return true;
+}
+
+bool Group::removeMember(int studentID) {
+    MemberNode* previous = nullptr;
+    MemberNode* current = head;
+
+    while (current != nullptr && current->student.getID() != studentID) {
+        previous = current;
+        current = current->next;
+    }
+
+    if (current == nullptr) return false;
+
+    if (previous == nullptr) head = current->next;
+    else previous->next = current->next;
+
+    delete current;
+    return true;
 }
 
 void Group::displayGroup() const {
-    std::cout << "\nGroup ID: " << groupID
-              << "\nGroup Name: " << groupName
-              << "\nRequired Skills: " << requiredSkill1
-              << ", " << requiredSkill2
-              << "\nMembers: ";
+    std::cout << "\nGroup ID: " << id << " | " << name << '\n'
+              << "Required skills: " << requiredSkill1
+              << ", " << requiredSkill2 << '\n'
+              << "Members (" << memberCount() << "/" << capacity << "): ";
 
-    if (head == nullptr) {
-        std::cout << "No members";
-    } else {
-        const MemberNode* current = head;
-        while (current != nullptr) {
-            std::cout << current->student.getName();
-            if (current->next != nullptr) std::cout << " -> ";
-            current = current->next;
-        }
+    if (head == nullptr) std::cout << "None";
+    for (const MemberNode* current = head;
+         current != nullptr; current = current->next) {
+        std::cout << current->student.getName();
+        if (current->next != nullptr) std::cout << " -> ";
     }
-    std::cout << '\n';
+
+    std::cout << "\nVacancies: " << vacancies() << '\n';
 }
 
 } 
